@@ -15,33 +15,59 @@ source venv/bin/activate
 
 ## Récupérer les fichiers du serveur
 
-### Via SFTP/rsync (recommandé)
+### Méthode automatique (recommandé) 🚀
 
 ```bash
-# Remplacer par vos informations de connexion
-rsync -avz --progress user@votre-vps-hostinger.com:/chemin/vers/minecraft/world/region ./world/
+# 1. Configuration initiale (une seule fois)
+cp server_config.sh.example server_config.sh
+nano server_config.sh  # Collez votre mot de passe SSH
+chmod 600 server_config.sh
+
+# 2. Installer sshpass
+brew install hudochenkov/sshpass/sshpass
+
+# 3. Synchroniser (sans taper le mot de passe !)
+./sync_from_server.sh
 ```
 
-### Via panel Hostinger
-1. Aller sur le panel Hostinger
-2. File Manager → Dossier Minecraft
-3. Télécharger `world/region/` localement
-4. Déplacer dans `./world/region/`
+📚 **Guide complet** : `docs/SSH_CONFIG.md`
+
+### Alternative : Clés SSH
+```bash
+ssh-keygen -t ed25519
+ssh-copy-id root@82.25.117.8
+./sync_from_server.sh  # Plus besoin de mot de passe
+```
 
 ## Première utilisation
 
-### Trouver des diamants
+### Trouver des diamants 💎
 
 ```bash
-# Analyse simple
-python src/main.py --world-path ./world --resource diamond
+# Script optimisé - Trouve les diamants autour de vous
+python3 find_diamonds_around.py
 
-# Avec carte
-python src/main.py --world-path ./world --resource diamond --generate-map
+# Résultat: Liste des diamants par distance
+# Plus proche : X=-72, Y=5, Z=24 (1.0m)
+# Précision : ±1-2 blocs (validée !)
+```
 
-# Analyse complète
-python src/main.py --world-path ./world --resource diamond \
-  --generate-map --heatmap --height-chart --stats
+### Tous les minerais ⛏️
+
+```bash
+# Scanner tous les types de minerais
+python3 find_all_ores_around.py
+
+# Affiche : Diamant, Or, Fer, Cuivre, Lapis, Redstone, Charbon, Émeraude
+```
+
+### Carte interactive HTML 🗺️
+
+```bash
+# Générer une carte web interactive
+python3 generate_ore_map_html.py
+
+# Ouvrir : output/carte_minerais.html
 ```
 
 ### Résultats
@@ -81,7 +107,13 @@ python src/main.py --world-path ./world --resource diamond \
 ### 3. Scanner toutes les ressources
 
 ```bash
-./example_scan.sh
+# Voir tous les minerais dans un rayon de 32 blocs
+python3 find_all_ores_around.py
+
+# Modifier le rayon et la position dans le fichier :
+# TARGET_X = -88
+# TARGET_Z = 23
+# SEARCH_RADIUS = 32
 ```
 
 ## Interpréter les résultats
@@ -105,23 +137,43 @@ python src/main.py --world-path ./world --resource diamond \
 ## Aide rapide
 
 ```bash
-# Voir toutes les options
-python src/main.py --help
+# Synchroniser le monde
+./sync_from_server.sh
 
-# Ressources disponibles
-diamond, iron, gold, copper, coal, lapis, redstone, emerald
+# Trouver des diamants
+python3 find_diamonds_around.py
+
+# Tous les minerais
+python3 find_all_ores_around.py
+
+# Carte HTML
+python3 generate_ore_map_html.py
 ```
+
+### Configuration
+
+Éditez les fichiers pour changer la position :
+- `find_diamonds_around.py` → `TARGET_X`, `TARGET_Z`
+- `find_all_ores_around.py` → `TARGET_X`, `TARGET_Z`, `SEARCH_RADIUS`
+- `generate_ore_map_html.py` → `TARGET_X`, `TARGET_Z`, `SEARCH_RADIUS`
 
 ## Problèmes fréquents
 
+**"ModuleNotFoundError: No module named 'nbt'"**
+```bash
+pip3 install -r requirements.txt
+```
+
 **"Aucun fichier de région trouvé"**
-→ Vérifier que `world/region/*.mca` existe
+```bash
+./sync_from_server.sh  # Synchroniser d'abord
+```
 
-**"Aucune ressource trouvée"**
-→ Essayer sans `--y-level` ou élargir la zone
+**"Mot de passe SSH demandé à chaque fois"**
+→ Voir `docs/SSH_CONFIG.md` pour configurer l'auto-login
 
-**Lent**
-→ Utiliser `--x-range` et `--z-range` pour limiter la zone
+**"Coordonnées imprécises (+/- 5 blocs)"**
+→ Normal ! Précision validée à ±1-2 blocs pour les veines de minerais
 
 ## Prochaines étapes
 

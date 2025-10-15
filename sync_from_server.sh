@@ -1,10 +1,19 @@
 #!/bin/bash
 # Script pour synchroniser les fichiers de région depuis le serveur Hostinger (Docker)
 
-# Configuration
-VPS_HOST="82.25.117.8"
-VPS_USER="root"
-CONTAINER_NAME="minecraft-server"
+# Charger la configuration si elle existe
+if [ -f "server_config.sh" ]; then
+    source server_config.sh
+    echo "✓ Configuration chargée depuis server_config.sh"
+else
+    # Configuration par défaut (nécessite de taper le mot de passe)
+    VPS_HOST="82.25.117.8"
+    VPS_USER="root"
+    CONTAINER_NAME="minecraft-server"
+    VPS_PASSWORD=""
+    echo "⚠️  Fichier server_config.sh non trouvé - Vous devrez taper le mot de passe"
+    echo "   Pour éviter cela, copiez server_config.sh.example vers server_config.sh"
+fi
 
 # Couleurs
 GREEN='\033[0;32m'
@@ -12,6 +21,24 @@ CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
+
+# Fonction pour exécuter SSH avec ou sans mot de passe
+run_ssh() {
+    if [ -n "$VPS_PASSWORD" ] && command -v sshpass &> /dev/null; then
+        sshpass -p "$VPS_PASSWORD" ssh -o StrictHostKeyChecking=no "$@"
+    else
+        ssh "$@"
+    fi
+}
+
+# Fonction pour exécuter rsync avec ou sans mot de passe
+run_rsync() {
+    if [ -n "$VPS_PASSWORD" ] && command -v sshpass &> /dev/null; then
+        sshpass -p "$VPS_PASSWORD" rsync -e "ssh -o StrictHostKeyChecking=no" "$@"
+    else
+        rsync "$@"
+    fi
+}
 
 echo "=========================================="
 echo "  Synchronisation Minecraft (Docker)"
@@ -28,7 +55,7 @@ mkdir -p world/region
 echo -e "${CYAN}📡 Connexion au serveur...${NC}"
 
 # Vérifier la connexion SSH
-ssh -o ConnectTimeout=10 "$VPS_USER@$VPS_HOST" "echo '✓ Connexion SSH réussie'" 2>/dev/null
+run_ssh -o ConnectTimeout=10 "$VPS_USER@$VPS_HOST" "echo '✓ Connexion SSH réussie'" 2>/dev/null
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Impossible de se connecter au serveur${NC}"
     echo "Vérifiez votre connexion SSH"
@@ -39,7 +66,7 @@ fi
 echo ""
 echo -e "${CYAN}📦 Copie depuis le conteneur Docker...${NC}"
 
-ssh "$VPS_USER@$VPS_HOST" << 'ENDSSH'
+run_ssh "$VPS_USER@$VPS_HOST" << 'ENDSSH'
 # Vérifier que le conteneur existe et tourne
 if ! docker ps | grep -q minecraft-server; then
     echo "❌ Le conteneur minecraft-server n'est pas en cours d'exécution"
@@ -69,7 +96,7 @@ fi
 # Étape 2: Télécharger vers votre Mac
 echo ""
 echo -e "${CYAN}⬇️  Téléchargement vers Mac...${NC}"
-rsync -avz --progress "$VPS_USER@$VPS_HOST:~/minecraft-backup/region/" "./world/region/"
+run_rsync -avz --progress "$VPS_USER@$VPS_HOST:~/minecraft-backup/region/" "./world/region/"
 
 if [ $? -eq 0 ]; then
     echo ""
@@ -88,7 +115,7 @@ if [ $? -eq 0 ]; then
     
     # Nettoyage sur le serveur
     echo -e "${YELLOW}🧹 Nettoyage du serveur...${NC}"
-    ssh "$VPS_USER@$VPS_HOST" "rm -rf ~/minecraft-backup"
+    run_ssh "$VPS_USER@$VPS_HOST" "rm -rf ~/minecraft-backup"
     echo "✓ Nettoyage terminé"
     echo ""
     

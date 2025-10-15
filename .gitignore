@@ -47,3 +47,8 @@ test_world/
 
 # pyenv
 .python-version
+
+# Configuration sensible (mots de passe, etc.)
+.env
+config.sh
+server_config.sh

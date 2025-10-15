@@ -1,0 +1,16 @@
+#!/bin/bash
+# Configuration du serveur Minecraft
+# Copiez ce fichier vers server_config.sh et remplissez vos informations
+
+# Informations du serveur VPS
+export VPS_HOST="82.25.117.8"
+export VPS_USER="root"
+export VPS_PASSWORD="VOTRE_MOT_DE_PASSE_ICI"
+
+# Configuration Docker
+export CONTAINER_NAME="minecraft-server"
+export CONTAINER_WORLD_PATH="/data/world/region"
+
+# Chemins locaux
+export LOCAL_WORLD_PATH="./world/region"
+export BACKUP_PATH="~/minecraft-backup"

@@ -1,0 +1,18 @@
+# IMPORTANT: Python 3.10-3.12 recommandé
+# Si vous avez Python 3.13, créez un venv avec Python 3.12:
+#   brew install python@3.12
+#   python3.12 -m venv venv
+
+# Core dependencies - Version GitHub pour support Minecraft 1.21.x
+git+https://github.com/matcool/anvil-parser.git@master  # Support Minecraft 1.21.x
+Pillow>=10.4.0           # Génération d'images pour les cartes
+matplotlib>=3.9.0        # Graphiques et visualisations
+numpy>=2.0.0             # Calculs numériques
+pandas>=2.2.0            # Analyse de données et statistiques
+nbt>=1.5.0               # NBT file format support
+
+# CLI
+colorama>=0.4.6          # Couleurs dans le terminal
+
+# Optional: Progress bars
+tqdm>=4.66.0             # Barres de progression

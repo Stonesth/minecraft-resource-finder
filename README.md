@@ -4,9 +4,9 @@
 Outil d'analyse des fichiers de région Minecraft pour détecter et cartographier les ressources (diamants, minerais, etc.) avec génération de cartes et statistiques.
 
 ## Objectifs
-- ✅ **Phase 1** : Détection des filons de diamants
-- 🔜 **Phase 2** : Extension à d'autres ressources (fer, or, redstone, émeraudes, etc.)
-- 🔮 **Phase 3** : Statistiques avancées et heatmaps
+- ✅ **Phase 1** : Détection des filons de diamants → **TERMINÉ**
+- ✅ **Phase 2** : Extension à toutes les ressources (fer, or, redstone, émeraudes, etc.) → **TERMINÉ**
+- 🔄 **Phase 3** : Statistiques avancées et heatmaps → **EN COURS**
 - 🔮 **Phase 4** : Interface graphique (optionnel)
 
 ## Statut
@@ -186,13 +186,19 @@ C'est le diamant le plus proche (1.0 blocs) !
 - [x] Synchronisation SSH automatique
 - [x] Organisation du code (tests/, scripts/)
 
-### 🔄 Phase 2 - Améliorations (EN COURS)
+### ✅ Phase 2 - Toutes les ressources (TERMINÉE)
+- [x] Support de tous les minerais (8 types)
+- [x] Script `find_all_ores_around.py`
+- [x] Statistiques par type de minerai
+- [x] Tri par distance
+
+### 🔄 Phase 3 - Visualisation avancée (EN COURS)
 - [x] Carte HTML interactive
 - [ ] Filtrage par hauteur (Y-level)
 - [ ] Export JSON des coordonnées
-- [ ] Heatmap de densité
+- [ ] Heatmap de densité interactive
 
-### 🔮 Phase 3 - Avancé (FUTUR)
+### 🔮 Phase 4 - Fonctionnalités avancées (FUTUR)
 - [ ] Interface web complète
 - [ ] Mode surveillance (watch)
 - [ ] Intégration Discord
